@@ -1,7 +1,9 @@
 from __future__ import annotations
 import argparse
 import logging
+import os
 import sys
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from typing import Any
 
@@ -38,12 +40,37 @@ def load_config(path: Path) -> dict[str, Any]:
 
 
 def run(config: dict[str, Any] | None = None) -> str:
-    """Run the application logic."""
+    """Run the application logic and serve a webpage on Render's PORT."""
     if config is None:
         config = {}
 
     logging.debug("Running with config: %s", config)
-    return "KageTheKing is running!"
+    message = "KageTheKing is running!"
+    print(message, flush=True)
+
+    class AppHandler(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            html = f"""<!DOCTYPE html>
+<html>
+<head><title>KageTheKing</title></head>
+<body style="font-family: sans-serif; text-align: center; margin-top: 60px;">
+    <h1>{message}</h1>
+    <p>Config loaded: {config}</p>
+</body>
+</html>"""
+            self.wfile.write(html.encode("utf-8"))
+
+        def log_message(self, format: str, *args: Any) -> None:
+            logging.info("%s - %s", self.address_string(), format % args)
+
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), AppHandler)
+    logging.info("Serving KageTheKing on http://0.0.0:%s", port)
+    server.serve_forever()
+    return message
 
 
 def main() -> int:
@@ -76,3 +103,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
