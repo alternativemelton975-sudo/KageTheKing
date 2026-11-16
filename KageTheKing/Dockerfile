@@ -7,4 +7,4 @@ WORKDIR /app
 
 COPY . .
 
-CMD ["python", "KageTheKing/main.py", "--log-level", "INFO"]
+CMD ["sh", "-c", "if [ -f KageTheKing/main.py ]; then python KageTheKing/main.py --log-level INFO; else python main.py --log-level INFO; fi"]
