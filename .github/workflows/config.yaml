@@ -1,2 +1,4 @@
 app_name: KageTheKing
 environment: production
+log_level: INFO
+
