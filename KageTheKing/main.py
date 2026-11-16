@@ -58,7 +58,6 @@ def generate_reply(user_message: str, config: dict[str, Any]) -> str:
     if not text:
         return "Silence speaks volumes, but I need words to reply! Ask me anything."
 
-    # 1. Greetings
     if re.search(r"\b(hello|hi|hey|yo|sup|greetings|howdy)\b", text):
         return random.choice([
             f"Yo! {app_name} is in the building. What's on your mind?",
@@ -67,7 +66,6 @@ def generate_reply(user_message: str, config: dict[str, Any]) -> str:
             f"What's up! You're talking to {app_name}. Fire away with your question.",
         ])
 
-    # 2. How are you / status check
     if any(phrase in text for phrase in ["how are you", "how's it going", "how do you feel", "you good"]):
         return random.choice([
             "Running at 100% CPU efficiency and feeling royal. How about you?",
@@ -75,7 +73,6 @@ def generate_reply(user_message: str, config: dict[str, Any]) -> str:
             "Better now that someone finally messaged me! What are we getting into today?",
         ])
 
-    # 3. Identity & Creator questions
     if any(phrase in text for phrase in ["who are you", "what are you", "your name", "who made you", "who created you"]):
         return random.choice([
             f"I am {app_name}—custom-built in Python, containerized in Docker, and reigning supreme on Render.",
@@ -83,7 +80,6 @@ def generate_reply(user_message: str, config: dict[str, Any]) -> str:
             f"I'm {app_name}! Think of me as your digital right-hand assistant.",
         ])
 
-    # 4. Jokes & Humor
     if any(word in text for word in ["joke", "funny", "laugh", "humor"]):
         return random.choice([
             "Why do programmers prefer dark mode? Because light attracts bugs!",
@@ -93,7 +89,6 @@ def generate_reply(user_message: str, config: dict[str, Any]) -> str:
             "A SQL query walks into a bar, walks up to two tables, and asks: 'Can I join you?'",
         ])
 
-    # 5. Fun Facts / Trivia
     if any(phrase in text for phrase in ["fact", "trivia", "tell me something", "teach me", "random"]):
         return random.choice([
             "Fun fact: Honey never spoils. Archaeologists have found 3,000-year-old pots of honey in Egyptian tombs that are still edible!",
@@ -103,7 +98,6 @@ def generate_reply(user_message: str, config: dict[str, Any]) -> str:
             "Did you know? Bananas are berries, while strawberries technically aren't!",
         ])
 
-    # 6. Motivation / Advice
     if any(word in text for word in ["motivate", "motivation", "quote", "inspire", "advice", "stuck"]):
         return random.choice([
             "Every expert was once a beginner who refused to quit. Keep pushing forward!",
@@ -112,11 +106,10 @@ def generate_reply(user_message: str, config: dict[str, Any]) -> str:
             "You didn't come this far just to come this far—keep building!",
         ])
 
-    # 7. Games / Coin Flip / Dice Roll / Magic 8-Ball
     if "flip" in text or "coin" in text:
-        return f"I flipped a virtual coin... it landed on **{random.choice(['HEADS', 'TAILS'])}**!"
+        return f"I flipped a virtual coin... it landed on {random.choice(['HEADS', 'TAILS'])}!"
     if "dice" in text or "roll" in text:
-        return f"Rolling a 6-sided die... you got a **{random.randint(1, 6)}**!"
+        return f"Rolling a 6-sided die... you got a {random.randint(1, 6)}!"
     if any(phrase in text for phrase in ["should i", "will i", "is it", "am i", "magic 8"]):
         return random.choice([
             "Without a doubt—go for it!",
@@ -126,7 +119,6 @@ def generate_reply(user_message: str, config: dict[str, Any]) -> str:
             "100% yes. Make it happen!",
         ])
 
-    # 8. Simple Math Calculator (e.g., "what is 12 * 8" or "45 + 19")
     math_match = re.search(r"(-?\d+(?:\.\d+)?)\s*([+\-*/])\s*(-?\d+(?:\.\d+)?)", text)
     if math_match:
         num1 = float(math_match.group(1))
@@ -145,7 +137,6 @@ def generate_reply(user_message: str, config: dict[str, Any]) -> str:
         formatted = int(ans) if ans.is_integer() else round(ans, 4)
         return f"Easy math! {num1:g} {op} {num2:g} = {formatted}."
 
-    # 9. Time / Date / Config / Help
     if "time" in text or "date" in text:
         now = datetime.now(timezone.utc)
         return f"Right now it's {now.strftime('%A, %B %d, %Y at %H:%M:%S UTC')}."
@@ -161,7 +152,6 @@ def generate_reply(user_message: str, config: dict[str, Any]) -> str:
             "• Inspiration ('Motivate me') or System Info ('What time is it?', 'Show config')"
         )
 
-    # 10. Question-mark fallback vs Statement fallback
     if raw.endswith("?"):
         return random.choice([
             f"Ooh, '{raw}' is a deep question! I'm still learning that one—try asking for a joke, fun fact, math problem, or coin flip.",
@@ -185,17 +175,21 @@ HTML_PAGE = """<!DOCTYPE html>
     <style>
         body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .chat-container { width: 100%; max-width: 520px; background: #1e293b; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; height: 82vh; overflow: hidden; }
-        .header { background: #334155; padding: 16px; font-weight: bold; font-size: 1.15rem; text-align: center; border-bottom: 1px solid #475569; letter-spacing: 0.5px; }
+        .header { background: #334155; padding: 16px; font-weight: bold; font-size: 1.15rem; text-align: center; border-bottom: 1px solid #475569; }
         .messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .msg { padding: 10px 14px; border-radius: 12px; max-width: 82%; line-height: 1.45; word-wrap: break-word; white-space: pre-line; }
-        .user { background: #2563eb; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .bot { background: #334155; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .user { background: #2563eb; align-self: flex-end; }
+        .bot { background: #334155; align-self: flex-start; }
         .suggestions { display: flex; gap: 6px; padding: 8px 12px; overflow-x: auto; background: #1e293b; border-top: 1px solid #334155; }
         .chip { background: #0f172a; color: #94a3b8; border: 1px solid #475569; border-radius: 16px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; white-space: nowrap; }
         .chip:hover { background: #334155; color: #f8fafc; }
         .input-area { display: flex; border-top: 1px solid #475569; padding: 10px; background: #1e293b; gap: 8px; }
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+        input { flex: 1; padding: 11px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #f8fafc; outline: none; font-size: 0.95rem; }
+        button.send-btn { padding: 10px 18px; border: none; border-radius: 8px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
+        button.send-btn:hover { background: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">KageTheKing Chatbot</div>
 
