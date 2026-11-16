@@ -7,4 +7,4 @@ WORKDIR /app
 
 COPY . .
 
-CMD ["python", "KageTheKing/main.py", "--log-level", "INFO"]
+CMD ["python", "main.py", "--log-level", "INFO"]
